@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "skjmod",
+  "version": "${version}",
+  
+  "name": "SKJmod",
+  "description": "Real-time Wynncraft bomb bell detection with Discord integration via WynnTracker",
+  "authors": [
+    "SKJ"
+  ],
+  "contact": {
+    "homepage": "https://github.com/yourusername/skjmod",
+    "sources": "https://github.com/yourusername/skjmod",
+    "issues": "https://github.com/yourusername/skjmod/issues"
+  },
+  
+  "license": "MIT",
+  
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.gqrshy.skjmod.SKJMod"
+    ]
+  },
+  
+  "mixins": [
+    "skjmod.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "fabric-api": "*",
+    "minecraft": "1.21.4",
+    "java": ">=21"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

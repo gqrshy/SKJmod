@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.gqrshy.skjmod.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "skjmod.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
