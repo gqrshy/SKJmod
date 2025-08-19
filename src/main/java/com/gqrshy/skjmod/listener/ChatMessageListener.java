@@ -20,13 +20,9 @@ public class ChatMessageListener {
         this.discordNotifier = new DiscordNotifier(configManager);
     }
     
-    public void onChatMessage(Text message, boolean overlay) {
-        if (overlay) {
-            return;
-        }
-        
+    public Text onChatMessage(Text message) {
         if (!configManager.getConfig().isEnableNotification()) {
-            return;
+            return message;
         }
         
         String messageString = preprocessMessage(message);
@@ -36,39 +32,34 @@ public class ChatMessageListener {
         }
         
         if (isBombBellMessage(messageString)) {
-            if (configManager.getConfig().isEnableDebugLog()) {
-                SKJMod.LOGGER.debug("Detected Bombbell message: {}", messageString);
-            }
+            SKJMod.LOGGER.info("Detected Bombbell message: {}", messageString);
             
             Optional<BombInfo> bombInfoOpt = messageParser.parseBombMessage(messageString);
             
             if (bombInfoOpt.isPresent()) {
                 BombInfo bombInfo = bombInfoOpt.get();
+                SKJMod.LOGGER.info("Parsed bomb info: Player={}, Type={}, World={}", 
+                    bombInfo.getPlayerName(), bombInfo.getBombType(), bombInfo.getWorldName());
                 
                 if (configManager.getConfig().isBombTypeEnabled(bombInfo.getBombType().name())) {
-                    SKJMod.LOGGER.info("Processed Bomb: {}", bombInfo);
+                    SKJMod.LOGGER.info("Sending Discord notification for bomb: {}", bombInfo);
                     discordNotifier.sendBombNotification(bombInfo);
                 } else {
-                    if (configManager.getConfig().isEnableDebugLog()) {
-                        SKJMod.LOGGER.debug("Bomb type {} is disabled in configuration", 
-                                bombInfo.getBombType().name());
-                    }
+                    SKJMod.LOGGER.info("Bomb type {} is disabled in configuration", 
+                            bombInfo.getBombType().name());
                 }
             } else {
                 SKJMod.LOGGER.warn("Failed to parse Bombbell message: {}", messageString);
             }
+        } else if (configManager.getConfig().isEnableDebugLog()) {
+            SKJMod.LOGGER.debug("Message is not a bomb bell message: {}", messageString);
         }
+        
+        return message;
     }
     
     private boolean isBombBellMessage(String message) {
-        return message.contains(" has thrown a") && 
-               message.contains(" Bomb on ") &&
-               (message.contains("Combat Experience") ||
-                message.contains("Profession Experience") ||
-                message.contains("Profession Speed") ||
-                message.contains("Dungeon") ||
-                message.contains("Loot Chest") ||
-                message.contains("Loot"));
+        return message.contains(" has thrown a") && message.contains(" Bomb on ");
     }
     
     private String preprocessMessage(Text message) {

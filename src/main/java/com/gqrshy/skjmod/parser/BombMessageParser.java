@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class BombMessageParser {
     private static final String BOMB_REGEX = 
-        "(?<player>.+) has thrown an? (?<bombName>.+) Bomb on (?<world>[A-Z]{2}\\d+)";
+        "(?<player>.+) has thrown an? (?<bombName>.+) Bomb on (?<world>.{2}\\d+)";
     
     private static final Pattern BOMB_PATTERN = Pattern.compile(BOMB_REGEX);
     
@@ -59,6 +59,6 @@ public class BombMessageParser {
             return false;
         }
         
-        return worldName.matches("^[A-Z]{2}\\d+$");
+        return worldName.matches("^.{2}\\d+$");
     }
 }

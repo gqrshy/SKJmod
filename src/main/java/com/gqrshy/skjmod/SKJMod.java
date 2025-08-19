@@ -1,9 +1,9 @@
 package com.gqrshy.skjmod;
 
 import com.gqrshy.skjmod.config.ConfigManager;
+import com.gqrshy.skjmod.event.ChatMessageCallback;
 import com.gqrshy.skjmod.listener.ChatMessageListener;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +28,8 @@ public class SKJMod implements ClientModInitializer {
         // Initialize chat message listener
         this.chatMessageListener = new ChatMessageListener(configManager);
         
-        // Register chat message event listener
-        ClientReceiveMessageEvents.GAME.register(chatMessageListener::onChatMessage);
+        // Register chat message event listener with custom callback
+        ChatMessageCallback.EVENT.register(chatMessageListener::onChatMessage);
         
         LOGGER.info("SKJ Mod initialized successfully!");
     }

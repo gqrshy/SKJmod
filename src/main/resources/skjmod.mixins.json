@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.gqrshy.skjmod.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "refmap": "skjmod.refmap.json",
+    "mixins": [
+    ],
+    "client": [
+        "ChatMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
