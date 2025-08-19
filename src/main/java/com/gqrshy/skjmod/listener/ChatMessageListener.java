@@ -63,6 +63,18 @@ public class ChatMessageListener {
     }
     
     private String preprocessMessage(Text message) {
-        return message.getString().trim();
+        String messageString = message.getString().trim();
+        
+        // Remove Unicode characters that might be present before player names (support rank indicators, etc.)
+        messageString = messageString.replaceAll("[\\p{So}\\p{Sk}\\p{Mn}\\p{Cf}]", "").trim();
+        
+        // Clean up any multiple spaces that might be left
+        messageString = messageString.replaceAll("\\s+", " ");
+        
+        if (configManager.getConfig().isEnableDebugLog()) {
+            SKJMod.LOGGER.debug("Preprocessed message: '{}' -> '{}'", message.getString(), messageString);
+        }
+        
+        return messageString;
     }
 }

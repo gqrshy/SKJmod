@@ -11,6 +11,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,20 +56,57 @@ public class DiscordNotifier {
     }
     
     private WebhookMessage createWebhookMessage(BombInfo bombInfo) {
-        String title = String.format("💣 %s Bombが %s に投げられました！", 
-                bombInfo.getBombType().getDisplayName(), bombInfo.getWorldName());
+        String title = String.format("**%s Bomb** thrown on `%s`", 
+                bombInfo.getBombType().getEnglishName(), bombInfo.getWorldName());
         
+        String playerValue = String.format("`%s`", bombInfo.getPlayerName());
         WebhookMessage.Field playerField = new WebhookMessage.Field(
-                "プレイヤー", bombInfo.getPlayerName(), true);
+                "Player", playerValue, true);
         
+        String timestampValue = String.format("<t:%d:f>", getUnixTimestamp(bombInfo.getTimestamp()));
         WebhookMessage.Field timestampField = new WebhookMessage.Field(
-                "投げられた日時", bombInfo.getFormattedTimestamp(), true);
+                "Thrown At", timestampValue, true);
+        
+        String remainingTimeValue = calculateRemainingTime(bombInfo);
+        WebhookMessage.Field remainingTimeField = new WebhookMessage.Field(
+                "Remaining Time", remainingTimeValue, true);
+        
+        String expiresAtValue = String.format("<t:%d:R>", 
+                getUnixTimestamp(bombInfo.getTimestamp().plusMinutes(bombInfo.getBombType().getDurationMinutes())));
+        WebhookMessage.Field expiresField = new WebhookMessage.Field(
+                "Expires", expiresAtValue, true);
         
         WebhookMessage.Embed embed = new WebhookMessage.Embed(
                 title, bombInfo.getBombType().getColor(), 
-                Arrays.asList(playerField, timestampField));
+                Arrays.asList(playerField, timestampField, remainingTimeField, expiresField));
         
         return new WebhookMessage(Arrays.asList(embed));
+    }
+    
+    private String calculateRemainingTime(BombInfo bombInfo) {
+        LocalDateTime thrownTime = bombInfo.getTimestamp();
+        LocalDateTime expirationTime = thrownTime.plusMinutes(bombInfo.getBombType().getDurationMinutes());
+        LocalDateTime now = LocalDateTime.now();
+        
+        if (now.isAfter(expirationTime)) {
+            return "🔴 `Expired`";
+        }
+        
+        long minutesRemaining = ChronoUnit.MINUTES.between(now, expirationTime);
+        if (minutesRemaining <= 0) {
+            return "🔴 `Expired`";
+        } else if (minutesRemaining <= 5) {
+            return String.format("🔴 `%d min`", minutesRemaining);
+        } else if (minutesRemaining <= 10) {
+            return String.format("🟡 `%d min`", minutesRemaining);
+        } else {
+            return String.format("🟢 `%d min`", minutesRemaining);
+        }
+    }
+    
+    
+    private long getUnixTimestamp(LocalDateTime dateTime) {
+        return dateTime.toEpochSecond(ZoneOffset.UTC);
     }
     
     private boolean sendWebhookRequest(String webhookUrl, WebhookMessage message) {
