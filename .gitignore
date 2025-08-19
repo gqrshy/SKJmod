@@ -1,0 +1,68 @@
+# Gradle files
+.gradle/
+build/
+gradle-wrapper.jar
+gradle-wrapper.properties
+
+# IntelliJ IDEA files
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse files
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# NetBeans files
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code files
+.vscode/
+
+# macOS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Minecraft development files
+run/
+
+# Fabric development files
+remapped-mods/
+
+# Claude files
+.claude/
+
+# Temporary files
+.tmp/
+
+# Downloaded Gradle distributions
+gradle.zip
+gradle88.zip
+gradle-8.5/
+gradle88/
+
+# Logs
+logs/
+*.log

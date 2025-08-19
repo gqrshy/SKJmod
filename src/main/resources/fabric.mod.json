@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "skjmod",
+  "version": "${version}",
+  "name": "SKJ Mod",
+  "description": "Detects WynnCraft Bombbell usage and sends Discord notifications",
+  "authors": [
+    "gqrshy"
+  ],
+  "contact": {
+    "homepage": "https://github.com/gqrshy/SKJmod",
+    "sources": "https://github.com/gqrshy/SKJmod"
+  },
+  "license": "MIT",
+  "icon": "assets/wynncraft-bombbell/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.gqrshy.skjmod.SKJMod"
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "minecraft": "~1.21.4",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+  }
+}
