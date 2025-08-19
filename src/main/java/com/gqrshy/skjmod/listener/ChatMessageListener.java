@@ -65,11 +65,28 @@ public class ChatMessageListener {
     private String preprocessMessage(Text message) {
         String messageString = message.getString().trim();
         
-        // Remove Unicode characters that might be present before player names (support rank indicators, etc.)
-        messageString = messageString.replaceAll("[\\p{So}\\p{Sk}\\p{Mn}\\p{Cf}]", "").trim();
-        
-        // Clean up any multiple spaces that might be left
-        messageString = messageString.replaceAll("\\s+", " ");
+        try {
+            // Remove various Unicode characters that might be present before player names
+            // This includes support rank indicators, special symbols, private use areas, etc.
+            messageString = messageString
+                    // Remove private use area characters (common in Minecraft formatting)
+                    .replaceAll("[\\uE000-\\uF8FF]", "")
+                    // Remove other special Unicode categories
+                    .replaceAll("[\\p{So}\\p{Sk}\\p{Mn}\\p{Cf}\\p{Cn}]", "")
+                    // Remove control characters
+                    .replaceAll("\\p{Cntrl}", "")
+                    // Remove any remaining non-printable characters except basic spaces
+                    .replaceAll("[^\\p{Print}\\p{Space}]", "")
+                    .trim();
+            
+            // Clean up any multiple spaces that might be left
+            messageString = messageString.replaceAll("\\s+", " ");
+            
+        } catch (Exception e) {
+            SKJMod.LOGGER.warn("Failed to preprocess message with regex, using original: {}", e.getMessage());
+            // Fall back to basic cleanup if regex fails
+            messageString = messageString.replaceAll("\\s+", " ").trim();
+        }
         
         if (configManager.getConfig().isEnableDebugLog()) {
             SKJMod.LOGGER.debug("Preprocessed message: '{}' -> '{}'", message.getString(), messageString);

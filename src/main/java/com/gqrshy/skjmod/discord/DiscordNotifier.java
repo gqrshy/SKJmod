@@ -12,6 +12,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -71,8 +72,12 @@ public class DiscordNotifier {
         WebhookMessage.Field remainingTimeField = new WebhookMessage.Field(
                 "Remaining Time", remainingTimeValue, true);
         
-        String expiresAtValue = String.format("<t:%d:R>", 
-                getUnixTimestamp(bombInfo.getTimestamp().plusMinutes(bombInfo.getBombType().getDurationMinutes())));
+        // Calculate expiration time by adding bomb duration to the thrown time (in seconds)
+        // Bomb durations: Combat/Profession XP/Loot/Loot Chest = 20min, Profession Speed/Dungeon = 10min
+        long thrownUnixTime = getUnixTimestamp(bombInfo.getTimestamp());
+        long durationInSeconds = bombInfo.getBombType().getDurationMinutes() * 60L;
+        long expirationUnixTime = thrownUnixTime + durationInSeconds;
+        String expiresAtValue = String.format("<t:%d:R>", expirationUnixTime);
         WebhookMessage.Field expiresField = new WebhookMessage.Field(
                 "Expires", expiresAtValue, true);
         
@@ -106,7 +111,8 @@ public class DiscordNotifier {
     
     
     private long getUnixTimestamp(LocalDateTime dateTime) {
-        return dateTime.toEpochSecond(ZoneOffset.UTC);
+        // Use Japan Standard Time (JST) which is UTC+9
+        return dateTime.atZone(ZoneId.of("Asia/Tokyo")).toEpochSecond();
     }
     
     private boolean sendWebhookRequest(String webhookUrl, WebhookMessage message) {

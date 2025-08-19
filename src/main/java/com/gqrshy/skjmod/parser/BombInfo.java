@@ -1,6 +1,8 @@
 package com.gqrshy.skjmod.parser;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class BombInfo {
@@ -19,7 +21,7 @@ public class BombInfo {
     }
     
     public BombInfo(String playerName, BombType bombType, String worldName) {
-        this(playerName, bombType, worldName, LocalDateTime.now());
+        this(playerName, bombType, worldName, ZonedDateTime.now(ZoneId.of("Asia/Tokyo")).toLocalDateTime());
     }
     
     public String getPlayerName() {
