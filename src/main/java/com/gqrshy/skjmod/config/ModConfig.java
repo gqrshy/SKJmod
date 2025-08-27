@@ -54,4 +54,5 @@ public class ModConfig {
     public boolean isBombTypeEnabled(String bombType) {
         return enabledBombTypes.contains(bombType);
     }
+    
 }

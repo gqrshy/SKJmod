@@ -32,9 +32,11 @@ public class ChatMessageListener {
         }
         
         if (isBombBellMessage(messageString)) {
-            SKJMod.LOGGER.info("Detected Bombbell message: {}", messageString);
+            // Extract only the bomb message line from potentially multi-line message
+            String bombMessageLine = extractBombMessageLine(messageString);
+            SKJMod.LOGGER.info("Detected Bombbell message: {}", bombMessageLine);
             
-            Optional<BombInfo> bombInfoOpt = messageParser.parseBombMessage(messageString);
+            Optional<BombInfo> bombInfoOpt = messageParser.parseBombMessage(bombMessageLine);
             
             if (bombInfoOpt.isPresent()) {
                 BombInfo bombInfo = bombInfoOpt.get();
@@ -49,7 +51,7 @@ public class ChatMessageListener {
                             bombInfo.getBombType().name());
                 }
             } else {
-                SKJMod.LOGGER.warn("Failed to parse Bombbell message: {}", messageString);
+                SKJMod.LOGGER.warn("Failed to parse Bombbell message: {}", bombMessageLine);
             }
         } else if (configManager.getConfig().isEnableDebugLog()) {
             SKJMod.LOGGER.debug("Message is not a bomb bell message: {}", messageString);
@@ -59,7 +61,67 @@ public class ChatMessageListener {
     }
     
     private boolean isBombBellMessage(String message) {
-        return message.contains(" has thrown a") && message.contains(" Bomb on ");
+        if (message == null || message.isEmpty()) {
+            return false;
+        }
+        
+        // Split by lines and check each line separately to avoid mixing different messages
+        String[] lines = message.split("\\n|\\r\\n|\\r");
+        
+        for (String line : lines) {
+            String cleanLine = line.trim();
+            if (cleanLine.contains(" has thrown a") && cleanLine.contains(" Bomb on ")) {
+                // Additional check to ensure it's not mixed with other messages
+                if (isCleanBombMessage(cleanLine)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    private boolean isCleanBombMessage(String line) {
+        // Make sure the line doesn't contain unrelated content
+        String[] invalidContains = {
+            "You don't have enough mana",
+            "You are now entering",
+            "You are now leaving",
+            "Thank you for your business",
+            "VolumeOff",
+            "Thrown At",
+            "Remaining Time",
+            "Expires"
+        };
+        
+        for (String invalid : invalidContains) {
+            if (line.contains(invalid)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private String extractBombMessageLine(String message) {
+        if (message == null || message.isEmpty()) {
+            return message;
+        }
+        
+        // Split by lines and find the clean bomb message line
+        String[] lines = message.split("\\n|\\r\\n|\\r");
+        
+        for (String line : lines) {
+            String cleanLine = line.trim();
+            if (cleanLine.contains(" has thrown a") && cleanLine.contains(" Bomb on ")) {
+                if (isCleanBombMessage(cleanLine)) {
+                    return cleanLine;
+                }
+            }
+        }
+        
+        // Fallback to the original message if no clean line found
+        return message;
     }
     
     private String preprocessMessage(Text message) {

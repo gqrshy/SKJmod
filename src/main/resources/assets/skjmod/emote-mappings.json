@@ -1,0 +1,26 @@
+{
+  "displayNameToCommand": {
+    "jumping_jacks": "jump",
+    "jumping jacks": "jump"
+  },
+  "defaultEmotes": [
+    "wave",
+    "cheer", 
+    "clap",
+    "dance",
+    "hug",
+    "jump",
+    "relax",
+    "flop"
+  ],
+  "displayNames": {
+    "wave": "Wave",
+    "cheer": "Cheer", 
+    "clap": "Clap",
+    "dance": "Dance",
+    "hug": "Hug",
+    "jump": "Jumping Jacks",
+    "relax": "Relax",
+    "flop": "Flop"
+  }
+}
